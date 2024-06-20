@@ -36,8 +36,14 @@ si1 = np.zeros((400, 1))
 si2 = np.zeros((400, 1))
 si3 = np.zeros((400, 1))
 si4 = np.zeros((400, 1))
-for k in range(100):
-    for i in range(100):
+yd = np.zeros((401 ,1))
+
+for i in range (400):
+    yd[i] = 0.5*np.sin(k*np.pi/30)+0.3*np.cos(k*np.pi/10);
+
+
+for k in range(400):
+    for i in range(400):
         #Estimator
         if k == 1:
             phi1[1] = 2
@@ -84,4 +90,11 @@ for k in range(100):
         y3[1] = 3.5
         y4[1] = 4
 
-        y1[k+1,i] = y1[k+1, i-1] + phi1[k,i]
+        
+
+        # y1[k+1,i] = y1[k+1, i-1] + phi1[k,i]
+
+        y1[i, k+1] = y1[i, k] * u1[i, k] / (1 + y1[i, k]**2) + u1[i, k]
+
+
+        #hetrogenious expression multi agents system
