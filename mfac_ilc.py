@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Step Factor Initializations
-rho = 0.25
+rho = 0.3
 eta = 1
-lamda = 1
-mu = 2.5
+lamda = 0.5
+mu = 0.5
 epsilon = 10**(-5)
 m = 100 #number of iteration
 
@@ -48,10 +48,10 @@ for k in range(m):
     for i in range(100):
         # Estimator
         if k == 0:
-            phi1[k, i] = 2
-            phi2[k, i] = 2
-            phi3[k, i] = 2
-            phi4[k, i] = 2
+            phi1[k, i] = 1
+            phi2[k, i] = 1
+            phi3[k, i] = 1
+            phi4[k, i] = 1
         elif k == 1:
             phi1[k, i] = phi1[k-1, i] + (eta * (u1[k-1, i] - 0) / (mu + (u1[k-1, i] - 0)**2)) * (y1[k, i] - y1[k-1, i] - phi1[k-1, i] * (u1[k-1, i] - 0))
             phi2[k, i] = phi2[k-1, i] + (eta * (u2[k-1, i] - 0) / (mu + (u2[k-1, i] - 0)**2)) * (y2[k, i] - y2[k-1, i] - phi2[k-1, i] * (u2[k-1, i] - 0))
@@ -81,15 +81,15 @@ for k in range(m):
         # Update y values, adding safeguards for large values
 
         if k== 1:
-            y1[k, i+1] = 1
+            y1[k, i+1] = 1.1
         elif k <= 30:
             y1[k, i+1] = y1[k, i] /  (1 + y1[k, i]**2) + u1[k, i]**2
         else:
-            y1[k, i+1] = ((y1[k, i] * y1[k, i-1] * y1[k, i-2] * u1[k, i-1]) + ()) 
+            y1[k, i+1] = ((y1[k, i] * y1[k, i-1] * y1[k, i-2] * u1[k, i-1]) + (1 + np.random.rand() * (i/50) * u1[k ,i])) / (1 + y1[k , i-1]**2 + y1[k, i-2]**2 )
          
        
 
-plt.plot(yd, label="Desired Output (yd)")
+plt.plot(yd, 'r-', linewidth=1.5, label='ydk')
 plt.plot(y1[m-1, :], 'b--', linewidth=1.5, label='y1')
 plt.legend()
 plt.show()
