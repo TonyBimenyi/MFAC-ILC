@@ -1,13 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Parameters
+L = np.array([[1, 0, 0, -1], [-1, 2, -1, 0], [0, -1, 1, 0], [-1, 0, -1, 2]])
+D = np.array([[1, 0, 0, 0], [0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]])
+
 # Step Factor Initializations
 rho = 0.3
 eta = 1
 lamda = 0.5
 mu = 0.5
-epsilon = 10**(-5)
-m = 100 #number of iteration
+epsilon = 10**(-4)
+m = 500  # Number of iterations
 
 # Define phi as arrays
 phi1 = np.zeros((m, 100))
@@ -22,10 +26,10 @@ u3 = np.zeros((m, 100))
 u4 = np.zeros((m, 100))
 
 # Error initializations
-e1 = np.zeros((m, 401))
-e2 = np.zeros((m, 401))
-e3 = np.zeros((m, 401))
-e4 = np.zeros((m, 401))
+e1 = np.zeros((m, 101))
+e2 = np.zeros((m, 101))
+e3 = np.zeros((m, 101))
+e4 = np.zeros((m, 101))
 
 # Definition of yd, si, and y as arrays
 y1 = np.zeros((m, 101))
@@ -37,59 +41,74 @@ si1 = np.zeros((m, 101))
 si2 = np.zeros((m, 101))
 si3 = np.zeros((m, 101))
 si4 = np.zeros((m, 101))
+
+# Initialize yd
 yd = np.zeros(101)
+for k in range(100):
+    yd[k] = 0.5 * np.sin(k * np.pi / 30) + 0.3 * np.cos(k * np.pi / 10)
 
-for i in range(101):
-    yd[i] = 0.5 * np.sin(i * np.pi / 30) + 0.3 * np.cos(i * np.pi / 10)
-
-
-
-for k in range(m):
+for k in range(1, m):
     for i in range(100):
         # Estimator
-        if k == 0:
+        if k == 1:
             phi1[k, i] = 1
             phi2[k, i] = 1
             phi3[k, i] = 1
             phi4[k, i] = 1
-        elif k == 1:
-            phi1[k, i] = phi1[k-1, i] + (eta * (u1[k-1, i] - 0) / (mu + (u1[k-1, i] - 0)**2)) * (y1[k, i] - y1[k-1, i] - phi1[k-1, i] * (u1[k-1, i] - 0))
-            phi2[k, i] = phi2[k-1, i] + (eta * (u2[k-1, i] - 0) / (mu + (u2[k-1, i] - 0)**2)) * (y2[k, i] - y2[k-1, i] - phi2[k-1, i] * (u2[k-1, i] - 0))
-            phi3[k, i] = phi3[k-1, i] + (eta * (u3[k-1, i] - 0) / (mu + (u3[k-1, i] - 0)**2)) * (y3[k, i] - y3[k-1, i] - phi3[k-1, i] * (u3[k-1, i] - 0))
-            phi4[k, i] = phi4[k-1, i] + (eta * (u4[k-1, i] - 0) / (mu + (u4[k-1, i] - 0)**2)) * (y4[k, i] - y4[k-1, i] - phi4[k-1, i] * (u4[k-1, i] - 0))
+        elif k == 2:
+            phi1[k, i] = phi1[k-1, i] + (eta * (u1[k-1, i] - 0)) * (y1[k-1, i+1] - 0 - phi1[k-1, i] * (u1[k-1, i] - 0)) / (mu + abs(u1[k-1, i] - 0)**2)
+            phi2[k, i] = phi2[k-1, i] + (eta * (u2[k-1, i] - 0)) * (y2[k-1, i+1] - 0 - phi2[k-1, i] * (u2[k-1, i] - 0)) / (mu + abs(u2[k-1, i] - 0)**2)
+            phi3[k, i] = phi3[k-1, i] + (eta * (u3[k-1, i] - 0)) * (y3[k-1, i+1] - 0 - phi3[k-1, i] * (u3[k-1, i] - 0)) / (mu + abs(u3[k-1, i] - 0)**2)
+            phi4[k, i] = phi4[k-1, i] + (eta * (u4[k-1, i] - 0)) * (y4[k-1, i+1] - 0 - phi4[k-1, i] * (u4[k-1, i] - 0)) / (mu + abs(u4[k-1, i] - 0)**2)
         else:
-            phi1[k, i] = phi1[k-1, i] + (eta * (u1[k-1, i] - u1[k-2, i]) / (mu + abs(u1[k-1, i] - u1[k-2, i])**2)) * (y1[k-1, i+1] - y1[k-2, i+1] - phi1[k-1, i] * (u1[k-1, i] - u1[k-2, i]))
+            phi1[k, i] = phi1[k-1, i] + (eta * (u1[k-1, i] - u1[k-2, i])) * (y1[k-1, i+1] - y1[k-2, i+1] - phi1[k-1, i] * (u1[k-1, i] - u1[k-2, i])) / (mu + abs(u1[k-1, i] - u1[k-2, i])**2)
+            phi2[k, i] = phi2[k-1, i] + (eta * (u2[k-1, i] - u2[k-2, i])) * (y2[k-1, i+1] - y2[k-2, i+1] - phi2[k-1, i] * (u2[k-1, i] - u2[k-2, i])) / (mu + abs(u2[k-1, i] - u2[k-2, i])**2)
+            phi3[k, i] = phi3[k-1, i] + (eta * (u3[k-1, i] - u3[k-2, i])) * (y3[k-1, i+1] - y3[k-2, i+1] - phi3[k-1, i] * (u3[k-1, i] - u3[k-2, i])) / (mu + abs(u3[k-1, i] - u3[k-2, i])**2)
+            phi4[k, i] = phi4[k-1, i] + (eta * (u4[k-1, i] - u4[k-2, i])) * (y4[k-1, i+1] - y4[k-2, i+1] - phi4[k-1, i] * (u4[k-1, i] - u4[k-2, i])) / (mu + abs(u4[k-1, i] - u4[k-2, i])**2)
            
-        
         # Definition of si
-       
-        si1 = yd[i] - 2 * y1 + y4
-        si2 = y1 - 2 * y2+ y3
-        si3 = y2 + yd[i] - 2 * y3
-        si4 = y1[i] + y3 - 2 * y4
-        
+        si1[k, i] = yd[i] - 2 * y1[k, i] + y4[k, i]
+        si2[k, i] = y1[k, i] - 2 * y2[k, i] + y3[k, i]
+        si3[k, i] = y2[k, i] + yd[i] - 2 * y3[k, i]
+        si4[k, i] = y1[k, i] + y3[k, i] - 2 * y4[k, i]
+
         # Input
-        if k == 0:
+        if k == 1:
             u1[k, i] = 0
             u2[k, i] = 0
             u3[k, i] = 0
             u4[k, i] = 0
         else:
-            u1[k, i] = u1[k-1, i] + (rho * phi1[k, i] / (lamda + abs(phi1[k, i])**2)) * si1[k-1, i+1]
+            u1[k, i] = u1[k-1, i] + rho * phi1[k, i] / (lamda + abs(phi1[k, i])**2) * si1[k-1, i+1]
+            u2[k, i] = u2[k-1, i] + rho * phi2[k, i] / (lamda + abs(phi2[k, i])**2) * si2[k-1, i+1]
+            u3[k, i] = u3[k-1, i] + rho * phi3[k, i] / (lamda + abs(phi3[k, i])**2) * si3[k-1, i+1]
+            u4[k, i] = u4[k-1, i] + rho * phi4[k, i] / (lamda + abs(phi4[k, i])**2) * si4[k-1, i+1]
 
-        
-        # Update y values, adding safeguards for large values
-
-        if k== 1:
+        # Update y values
+        if k == 1:
             y1[k, i+1] = 1.1
-        elif k <= 30:
-            y1[k, i+1] = y1[k, i] /  (1 + y1[k, i]**2) + u1[k, i]**2
+            y2[k, i+1] = 1.1
+            y3[k, i+1] = 1.1
+            y4[k, i+1] = 1.1
         else:
-            y1[k, i+1] = ((y1[k, i] * y1[k, i-1] * y1[k, i-2] * u1[k, i-1]) + (1 + np.random.rand() * (i/50) * u1[k ,i])) / (1 + y1[k , i-1]**2 + y1[k, i-2]**2 )
-         
-       
+            y1[k, i+1] = y1[k, i]*u1[k,i] / (1 + y1[k, i]**2) + u1[k, i]
+            y2[k, i+1] = y2[k, i]*u1[k,i] / (1 + y2[k, i]**2) + u2[k, i]
+            y3[k, i+1] = y3[k, i]*u3[k,i] / (1 + y3[k, i]**2) + u3[k, i]
+            y4[k, i+1] = y4[k, i]*u4[k,i] / (1 + y4[k, i]**2) + u4[k, i]
+        
 
-plt.plot(yd, 'r-', linewidth=1.5, label='ydk')
-plt.plot(y1[m-1, :], 'b--', linewidth=1.5, label='y1')
+# Plot results
+plt.plot(yd, 'k-', linewidth=1.5, label='$y_d(k)$')
+plt.plot(y1[m-1, :], 'r-', marker='o', markersize=4, label='Agent 1')
+plt.plot(y2[m-1, :], 'g-', marker='o', markersize=4, label='Agent 2')
+plt.plot(y3[m-1, :], 'y-', marker='o', markersize=4, label='Agent 3')
+plt.plot(y4[m-1, :], 'b-', marker='o', markersize=4, label='Agent 4')
+
+
+plt.xlim([0, 100])
+plt.ylim([-0.8, 0.8])
+plt.xlabel('time step')
+plt.ylabel('outputs of agents and reference')
 plt.legend()
+plt.title('Outputs of agents and reference at 200th iteration (Example 1)')
 plt.show()
