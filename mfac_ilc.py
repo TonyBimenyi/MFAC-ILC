@@ -11,44 +11,45 @@ eta = 1
 lamda = 0.5
 mu = 0.5
 epsilon = 10**(-4)
-m = 500  # Number of iterations
+m = 500  # Number of itterations 
+n = 100
 
 # Define phi as arrays
-phi1 = np.zeros((m, 100))
-phi2 = np.zeros((m, 100))
-phi3 = np.zeros((m, 100))
-phi4 = np.zeros((m, 100))
+phi1 = np.zeros((m, n))
+phi2 = np.zeros((m, n))
+phi3 = np.zeros((m, n))
+phi4 = np.zeros((m, n))
 
 # Input initializations
-u1 = np.zeros((m, 100))
-u2 = np.zeros((m, 100))
-u3 = np.zeros((m, 100))
-u4 = np.zeros((m, 100))
+u1 = np.zeros((m, n))
+u2 = np.zeros((m, n))
+u3 = np.zeros((m, n))
+u4 = np.zeros((m, n))
 
 # Error initializations
-e1 = np.zeros((m, 101))
-e2 = np.zeros((m, 101))
-e3 = np.zeros((m, 101))
-e4 = np.zeros((m, 101))
+e1 = np.zeros((m, n + 1))
+e2 = np.zeros((m, n + 1))
+e3 = np.zeros((m, n + 1))
+e4 = np.zeros((m, n + 1))
 
 # Definition of yd, si, and y as arrays
-y1 = np.zeros((m, 101))
-y2 = np.zeros((m, 101))
-y3 = np.zeros((m, 101))
-y4 = np.zeros((m, 101))
+y1 = np.zeros((m, n + 1))
+y2 = np.zeros((m, n + 1))
+y3 = np.zeros((m, n + 1))
+y4 = np.zeros((m, n + 1))
 
-si1 = np.zeros((m, 101))
-si2 = np.zeros((m, 101))
-si3 = np.zeros((m, 101))
-si4 = np.zeros((m, 101))
+si1 = np.zeros((m, n + 1))
+si2 = np.zeros((m, n + 1))
+si3 = np.zeros((m, n + 1))
+si4 = np.zeros((m, n + 1))
 
 # Initialize yd
-yd = np.zeros(101)
-for k in range(100):
+yd = np.zeros(n + 1)
+for k in range(n):
     yd[k] = 0.5 * np.sin(k * np.pi / 30) + 0.3 * np.cos(k * np.pi / 10)
 
 for k in range(1, m):
-    for i in range(100):
+    for i in range(n):
         # Estimator
         if k == 1:
             phi1[k, i] = 1
@@ -105,7 +106,7 @@ plt.plot(y3[m-1, :], 'y-', marker='o', markersize=4, label='Agent 3')
 plt.plot(y4[m-1, :], 'b-', marker='o', markersize=4, label='Agent 4')
 
 
-plt.xlim([0, 100])
+plt.xlim([0, n])
 plt.ylim([-0.8, 0.8])
 plt.xlabel('time step')
 plt.ylabel('outputs of agents and reference')
